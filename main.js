@@ -5,8 +5,18 @@
 // url of gravitar. instructions: https://www.npmjs.com/package/md5
 
 var math = require("./math")
-
+var md5 = require("md5")
 var _= require("lodash");
+
+//var npm = require("npm");
+// npm.load(myConfigObject, function (er) {
+//   if (er) return handlError(er)
+//   npm.commands.install(["some", "args"], function (er, data) {
+//     if (er) return commandFailed(er)
+//     // command succeeded, and data might have some info
+//   })
+//   // npm.registry.log.on("log", function (message) { .... })
+// })
 
 var http = require("http")
 var server = http.createServer(function(req, res){
@@ -42,33 +52,25 @@ if (input[1] === "math"){
 			  	var inverse = math.inverse(input)
 			  	res.write("the inverse of" + input[2] + "/" + input[2] + "is" + inverse+"\n")
 			  	break;
-
-			  	default:
-						res.write( "Unkown operation\n")
-						res.end();
 				  }
-} else {
-			switch(operator){
-
-				case "gravitar":
-	  		var imageURL;
-	  		var email = input[1];
-	  		console.log("email" + email)
-
-	  		break;
-	  	case "sentence":
-	  		var words = 0;
-	  		var spaces =0;
-	  		var characters=0;
-	  		var avgLength =0; 
-	  		console.log("words" + words)
-	  		break;
-
-	  	default:
-				res.write( "Unkown operation\n")
-				res.end();
- 	 		}
-		}
+	} else if(input[1] == "gravitar"){
+		var email = md5(input[2]);
+		var imageURL = "https://s.gravatar.com/avatar/" + email;
+		console.log(imageURL)
+	} else if (input[1] == "sentence"){
+		var text = decodeURI(input[2])
+		console.log(text);
+		var trimmedText = text.trim();
+		var chars = text.length;
+		var spaces = text.match(/\s/g).length;
+		var words = trimmedText.match(/[a-z]\s/ig).length + 1;
+		var avg = (chars - spaces) /words;
+		console.log(words + " words, " + chars + " characters, " + spaces + "spaces. Average word length is " + avg + " characters\n")
+		res.write(words + " words, " + chars + " characters, " + spaces + "spaces. Average word length is " + avg + " characters\n");
+	} else {
+		res.write( "Como? que-que?\n")
+		res.end();
+	 	}
 });
 
 
